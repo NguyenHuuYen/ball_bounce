@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ball Bounce</title>
+</head>
+<body onload="init();">
+    <canvas id="ball_bounce" width="700" height="400" style="border: 5px solid #03A9F4;"></canvas>
+    <script>
+        // Resolve: Sau mỗi 1 thời gian nhất định thì xóa ball đã vẽ trước đó, và thực hiện vẽ ball mới có tọa độ mới;
+        // Như vậy sẽ tạo được hiệu ứng giống như ball đang di chuyển;
+        // Sử dụng hệ số alpha để tính speed của ball, khi nhấn up thì alpha tăng, nhấn down thì alpha giảm;
+
+        var x = 100; // Tọa độ x ban đầu của ball;
+        var y = 50; // Tọa độ y ban đầu cảu ball;
+        var angleX = 1; // Sau mỗi lần di chuyển tọa độ x tăng thêm 1px;
+        var angleY = 1; // Sau mỗi lần di chuyển tọa độ y tăng thêm 1px;
+        var alpha = 1; // Hệ số speed của ball;
+
+        // Start
+        var draw = setInterval(move, 20);
+
+        // Hiệu ứng ball di chuyển
+        function move() {
+            var ball = document.getElementById("ball_bounce");
+            var ctx = ball.getContext("2d");
+
+            // Xóa tất cả các phần tử có mặt trong frame với width kéo dài từ 0 -> 700, height kéo dài từ 0 -> 400;
+            ctx.clearRect(0, 0, 700, 400);
+
+            // Bắt đầu 1 đường vẽ mới;
+            ctx.beginPath();
+            ctx.fillStyle = "#607D8B"; // Màu nền của ball;
+
+            // Vẽ ball:
+            // Tọa độ = (x, y);
+            // Bán kính = 25;
+            // Góc bắt đầu đường vẽ = 0 độ;
+            // Góc kết thúc đường vẽ = 2*MathPI = 360 độ;
+            ctx.arc(x, y, 25, 0, 2 * Math.PI);
+            ctx.fill(); // Fill các thuộc tính của đường vẽ Path đã set ở trên sẽ được hình ball;
+
+            // Tạo line chặn đường ball:
+            // Nếu x < 25 hoặc x > 675 thì sẽ thực hiện đảo ngược giá trị angleX sẽ làm ball di chuyển ngược lại;
+            // Vì frame có width = 700, height = 400 và ball có r = 25;
+            // Nên set condition < 25 hoặc > 675 để khi đường viền ngoài cùng của ball chạm line sẽ không bị tràn qua line;
+            // Tọa độ y cũng tương tự x;
+            if (x < 25 || x > 675) angleX = -angleX;
+            if (y < 25 || y > 375) angleY = -angleY;
+
+            // Alpha càng tăng thì tọa độ giữa 2 ball được vẽ liên tiếp càng cách xa nhau, sẽ tạo được hiệu ứng giống như ball di chuyển nhanh hơn;
+            // Khi alpha càng giảm thì ngược lại với trường hợp alpha tăng, min speed của ball khi alpha = 1;
+            x += angleX * alpha; // Tọa độ x tăng lên sau mỗi lần vẽ ball mới
+            y += angleY * alpha; // Tọa độ y tăng lên sau mỗi lần vẽ ball mới
+        };
+
+        // Điều khiển speed của ball
+        document.addEventListener("keydown", function (event) {
+            if (event.keyCode == 38) {
+                alpha++; // Nếu nút up được nhấn thì hệ số tăng;
+            }
+            if (event.keyCode == 40) {
+                alpha--; // Nếu nút down được nhấn thì hệ số giảm;
+            }
+            if (alpha < 1) alpha = 1;
+        })
+    </script>
+</body>
+</html>
